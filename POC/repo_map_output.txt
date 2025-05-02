@@ -1,0 +1,616 @@
+
+POC\test_repo_map_standalone.py:
+⋮
+│def should_ignore(path):
+⋮
+│def main():
+⋮
+
+scripts\extract_file_extensions.py:
+⋮
+│def extract_extensions(yaml_data: dict) -> Set[str]:
+⋮
+│def main():
+⋮
+
+scripts\extract_programming_languages.py:
+⋮
+│def load_target_languages(file_path):
+⋮
+│def download_languages_file(url):
+⋮
+│def extract_programming_languages(yaml_content, target_languages):
+⋮
+│def save_yaml(data, output_file):
+⋮
+│def main():
+⋮
+
+scripts\find_docs.py:
+⋮
+│INCLUDE_TAGS = {"markdown", "rst", "adoc"}
+│INCLUDE_EXTS = {".md", ".markdown", ".rst", ".txt", ".adoc", ".ipynb"}
+│
+⋮
+│def is_likely_doc_file(filepath):
+⋮
+│def find_likely_doc_files(root_dir):
+⋮
+
+scripts\lizard_analyzer.py:
+⋮
+│def calculate_llm_priority_score(total_ccn, max_ccn, function_count, total_nloc):
+⋮
+│def analyze_repo(repo_path: str, output_csv: str = None, top_n: int = None):
+⋮
+│def main():
+⋮
+
+scripts\update_language_extensions.py:
+⋮
+│def run_command(command: list[str], description: str, cwd: Path) -> None:
+⋮
+│def main():
+⋮
+
+src\code_understanding\__init__.py:
+⋮
+│__version__ = "0.1.0"
+│
+⋮
+│config = load_config()
+⋮
+
+src\code_understanding\analysis\complexity.py:
+⋮
+│logger = logging.getLogger("code_understanding.analysis.complexity")
+│
+⋮
+│class CodeComplexityAnalyzer:
+│    def __init__(self, repo_manager, repo_map_builder):
+│        self.repo_manager = repo_manager
+⋮
+│    async def analyze_repo_critical_files(
+│        self,
+│        repo_path: str,
+│        files: Optional[List[str]] = None,
+│        directories: Optional[List[str]] = None,
+│        limit: int = 50,
+│        include_metrics: bool = True,
+⋮
+│    def calculate_importance_score(self, function_count, total_ccn, max_ccn, nloc):
+⋮
+
+src\code_understanding\config.py:
+⋮
+│@dataclass
+│class DocumentationConfig:
+│    include_tags: List[str] = None
+⋮
+│    def __post_init__(self):
+⋮
+│@dataclass
+│class RepositoryConfig:
+│    cache_dir: str = "./repo_cache"
+⋮
+│    def __post_init__(self):
+⋮
+│@dataclass
+│class ServerConfig:
+│    name: str = "Code Understanding Server"
+⋮
+│    def __post_init__(self):
+⋮
+│def ensure_default_config() -> None:
+⋮
+│def get_config_search_paths() -> List[str]:
+⋮
+│def _load_base_config(config_path: str = None) -> ServerConfig:
+⋮
+│def load_config(config_path: str = None, overrides: dict = None) -> ServerConfig:
+⋮
+
+src\code_understanding\context\__init__.py:
+⋮
+│__all__ = ["RepoMapBuilder", "RepoMapExtractor"]
+
+src\code_understanding\context\builder.py:
+⋮
+│logger = logging.getLogger(__name__)
+│
+⋮
+│class MinimalModel:
+│    """Minimal model implementation from test_repo_map_simple.py."""
+│
+│    def token_count(self, text):
+⋮
+│class TiktokenModel:
+│    """Model implementation using tiktoken for exact GPT-2 token counts."""
+│
+│    def __init__(self):
+⋮
+│    def token_count(self, text):
+⋮
+│class MinimalIO(InputOutput):
+│    """Minimal IO implementation that prevents any stdout writes."""
+│
+│    def __init__(self):
+⋮
+│    def tool_output(self, text, **kwargs):
+⋮
+│    def tool_error(self, text, **kwargs):
+⋮
+│    def prompt_for_input(self, prompt, **kwargs):
+⋮
+│    def prompt_for_yesno(self, prompt, default=None, **kwargs):
+⋮
+│    def get_input(self, **kwargs):
+⋮
+│    def show_tool_output_command(self, command, output, returncode, **kwargs):
+⋮
+│    def show_tool_error(self, command, output, returncode, **kwargs):
+⋮
+│    def info_message(self, msg, **kwargs):
+⋮
+│    def warning_message(self, msg, **kwargs):
+⋮
+│    def error_message(self, msg, **kwargs):
+⋮
+│class SubprocessManager:
+│    """Cross-platform subprocess handling."""
+│
+│    async def run_command(self, cmd: List[str], **kwargs) -> str:
+⋮
+│    async def start_background_process(self, cmd: List[str]) -> asyncio.Task:
+│        """
+│        Start long-running process that is:
+│        - Non-blocking
+│        - Monitored
+│        - Properly cleaned up
+⋮
+│        async def _run_and_monitor():
+⋮
+│class RepoMapBuilder:
+│    """Manages RepoMap building process."""
+│
+│    def __init__(self, cache: RepositoryCache):
+⋮
+│    def _get_retry_guidance(self, file_count: int) -> Dict[str, Any]:
+⋮
+│    async def initialize_repo_map(
+│        self,
+│        root_dir: str,
+│        max_tokens: Optional[int] = None,
+│        is_full_build: bool = False,  # New parameter to indicate if this is a full build
+⋮
+│    async def gather_files(self, root_dir: str) -> List[str]:
+⋮
+│    async def gather_files_targeted(
+│        self,
+│        root_dir: str,
+│        files: Optional[List[str]] = None,
+│        directories: Optional[List[str]] = None,
+⋮
+│    async def _do_build(self, repo_path: str):
+⋮
+│    async def start_build(self, repo_path: str) -> None:
+⋮
+│    async def get_build_status(self, repo_path: str) -> dict:
+⋮
+│    async def get_repo_map_content(
+│        self,
+│        repo_path: str,
+│        files: List[str] = None,
+│        directories: List[str] = None,
+│        max_tokens: int = None,
+│        max_files_threshold: int = None,
+⋮
+│    async def get_repo_structure(
+│        self, repo_path: str, directories: List[str] = None, include_files: bool = False
+⋮
+
+src\code_understanding\context\extended_repo_map.py:
+⋮
+│class UntruncatedRepoMap(RepoMap):
+│    def to_tree(self, tags, chat_rel_fnames):
+│        """Override to_tree to prevent line truncation while preserving all other functionality"""
+│        if not tags:
+│            return ""
+│
+│        cur_fname = None
+│        cur_abs_fname = None
+│        lois = None
+│        output = ""
+│
+⋮
+
+src\code_understanding\context\extractor.py:
+⋮
+│class RepoMapExtractor:
+│    """Handles extraction and processing of RepoMap output."""
+│
+│    async def extract_files(self, repo_map_output: str) -> Set[str]:
+⋮
+│    async def process_repo_map(self, repo_map_output: str) -> Dict[str, Any]:
+⋮
+│    def _count_file_types(self, files: Set[str]) -> Dict[str, int]:
+⋮
+│    def _extract_directories(self, files: Set[str]) -> List[str]:
+⋮
+
+src\code_understanding\logging_config.py:
+⋮
+│def get_default_log_dir() -> Path:
+⋮
+│def setup_logging(server_config: Optional[ServerConfig] = None) -> None:
+⋮
+│logger = logging.getLogger("code_understanding")
+
+src\code_understanding\mcp\__init__.py:
+⋮
+│__version__ = "0.1.0"
+│__all__ = ["server", "create_mcp_server"]
+│
+⋮
+│def main(transport: str = "stdio"):
+⋮
+
+src\code_understanding\mcp\server\__init__.py:
+⋮
+│__all__ = ["server", "create_mcp_server"]
+
+src\code_understanding\mcp\server\app.py:
+⋮
+│logger = logging.getLogger("code_understanding.mcp")
+│
+⋮
+│def create_mcp_server(config: ServerConfig = None) -> FastMCP:
+⋮
+│def register_tools(
+│    mcp_server: FastMCP,
+│    repo_manager: RepositoryManager,
+│    repo_map_builder: RepoMapBuilder,
+│) -> None:
+│    """Register all MCP tools with the server."""
+│
+│    @mcp_server.tool(
+│        name="get_repo_file_content",
+│        description="""Retrieve file contents or directory listings from a repository. For files, r
+│
+│REQUIRED PARAMETER GUIDANCE:
+│- repo_path: MUST match the exact format of the original input to clone_repo
+│  - If you cloned using a GitHub URL (e.g., 'https://github.com/username/repo'), you MUST use that 
+│  - If you cloned using a local directory path, you MUST use that identical local path here
+│  - Mismatched formats will result in 'Repository not found in cache' errors""",
+│    )
+│    async def get_repo_file_content(repo_path: str, resource_path: str) -> dict:
+⋮
+│    @mcp_server.tool(
+│        name="refresh_repo",
+│        description="""Update a previously cloned repository in MCP's cache with latest changes and
+│
+│REQUIRED PARAMETER GUIDANCE:
+│- repo_path: MUST match the exact format of the original input to clone_repo
+│  - If you cloned using a GitHub URL (e.g., 'https://github.com/username/repo'), you MUST use that 
+│  - If you cloned using a local directory path, you MUST use that identical local path here
+│  - Mismatched formats will result in 'Repository not found in cache' errors""",
+│    )
+│    async def refresh_repo(repo_path: str) -> dict:
+⋮
+│    @mcp_server.tool(
+│        name="clone_repo",
+│        description="Clone a repository into the MCP server's analysis cache and initiate backgroun
+│    )
+│    async def clone_repo(url: str, branch: str = None) -> dict:
+⋮
+│    @mcp_server.tool(
+│        name="get_source_repo_map",
+│        description="""Retrieve a semantic analysis map of the repository's source code structure, 
+│
+│REQUIRED PARAMETER GUIDANCE:
+│- repo_path: MUST match the exact format of the original input to clone_repo
+│  - If you cloned using a GitHub URL (e.g., 'https://github.com/username/repo'), you MUST use that 
+│  - If you cloned using a local directory path, you MUST use that identical local path here
+│  - Mismatched formats will result in 'Repository not found in cache' errors
+│
+⋮
+│    async def get_source_repo_map(
+│        repo_path: str,
+│        files: List[str] = None,
+│        directories: List[str] = None,
+│        max_tokens: int = None,
+⋮
+│    @mcp_server.tool(
+│        name="get_repo_structure",
+│        description="""Retrieve directory structure and analyzable file counts for a repository to 
+│
+│REQUIRED PARAMETER GUIDANCE:
+│- repo_path: MUST match the exact format of the original input to clone_repo
+│  - If you cloned using a GitHub URL (e.g., 'https://github.com/username/repo'), you MUST use that 
+│  - If you cloned using a local directory path, you MUST use that identical local path here
+│  - Mismatched formats will result in 'Repository not found in cache' errors
+│
+⋮
+│    async def get_repo_structure(
+│        repo_path: str, directories: List[str] = None, include_files: bool = False
+⋮
+│    @mcp_server.tool(
+│        name="get_repo_critical_files",
+│        description="""Identify and analyze the most structurally significant files in a repository
+│
+│REQUIRED PARAMETER GUIDANCE:
+│- repo_path: MUST match the exact format of the original input to clone_repo
+│  - If you cloned using a GitHub URL (e.g., 'https://github.com/username/repo'), you MUST use that 
+│  - If you cloned using a local directory path, you MUST use that identical local path here
+│  - Mismatched formats will result in 'Repository not found in cache' errors
+│
+⋮
+│    async def get_repo_critical_files(
+│        repo_path: str,
+│        files: List[str] = None,
+│        directories: List[str] = None,
+│        limit: int = 50,
+│        include_metrics: bool = True,
+⋮
+│    @mcp_server.tool(
+│        name="get_repo_documentation",
+│        description="""Retrieve and analyze documentation files from a repository, including README
+│
+│REQUIRED PARAMETER GUIDANCE:
+│- repo_path: MUST match the exact format of the original input to clone_repo
+│  - If you cloned using a GitHub URL (e.g., 'https://github.com/username/repo'), you MUST use that 
+│  - If you cloned using a local directory path, you MUST use that identical local path here
+│  - Mismatched formats will result in 'Repository not found in cache' errors""",
+│    )
+│    async def get_repo_documentation(repo_path: str) -> dict:
+⋮
+│server = create_mcp_server()
+│
+⋮
+│@click.command()
+⋮
+│def main(
+│    port: int, transport: str, cache_dir: str = None, max_cached_repos: int = None
+⋮
+
+src\code_understanding\pattern_search\searcher.py:
+⋮
+│DEFAULT_EXCLUDE_DIRS = {
+│    # Python
+│    "venv/",
+│    "env/",
+│    ".env/",
+│    ".venv/",
+│    "__pycache__/",
+│    "*.pyc",
+│    ".pytest_cache/",
+│    ".coverage",
+⋮
+│class PatternSearcher:
+│    """Pattern-based code search implementation."""
+│
+│    def __init__(self):
+⋮
+│    def should_skip_path(self, path: str) -> bool:
+⋮
+│    async def search_codebase(
+│        self,
+│        root_dir: str,
+│        search_pattern: str,
+│        file_pattern: Optional[str] = None,
+│        ignore_case: bool = False,
+│        max_results: Optional[int] = None,
+⋮
+
+src\code_understanding\repository\__init__.py:
+⋮
+│__all__ = ["Repository", "RepositoryManager", "RepositoryCache", "documentation"]
+
+src\code_understanding\repository\cache.py:
+⋮
+│logger = logging.getLogger(__name__)
+│
+⋮
+│@dataclass
+│class RepositoryMetadata:
+│    path: str
+⋮
+│    def __post_init__(self):
+⋮
+│class RepositoryCache:
+│    def __init__(
+│        self, cache_dir: Path, max_cached_repos: int = 50, cleanup_interval: int = 86400
+⋮
+│    @contextmanager
+│    def _file_lock(self):
+⋮
+│    def _get_actual_repos(self) -> Set[str]:
+⋮
+│    def _write_metadata(self, metadata: Dict[str, RepositoryMetadata]):
+⋮
+│    def _read_metadata(self) -> Dict[str, RepositoryMetadata]:
+⋮
+│    def _sync_metadata(self) -> Dict[str, RepositoryMetadata]:
+⋮
+│    async def prepare_for_clone(self, target_path: str) -> bool:
+⋮
+│    async def add_repo(self, path: str, url: Optional[str] = None):
+⋮
+│    async def update_access(self, path: str):
+⋮
+│    async def remove_repo(self, path: str):
+⋮
+│    async def cleanup_old_repos(self):
+⋮
+│    async def update_clone_status(self, path: str, status: Dict[str, Any]):
+⋮
+│    async def update_repo_map_status(self, path: str, status: Dict[str, Any]):
+⋮
+│    async def get_repository_status(self, path: str) -> Dict[str, Any]:
+⋮
+
+src\code_understanding\repository\documentation.py:
+⋮
+│logger = logging.getLogger(__name__)
+│
+⋮
+│def is_likely_doc_file(filepath: str, config) -> bool:
+⋮
+│def get_doc_format(filepath: str, config) -> str:
+⋮
+│def categorize_doc_file(rel_path: str, config) -> str:
+⋮
+│def calculate_stats(doc_files) -> Dict[str, Any]:
+⋮
+│async def get_repository_documentation(repo_path: str) -> Dict[str, Any]:
+⋮
+
+src\code_understanding\repository\file_filtering\__init__.py:
+⋮
+│__all__ = ["RepoFilter"]
+
+src\code_understanding\repository\file_filtering\repo_filter.py:
+⋮
+│logger = logging.getLogger(__name__)
+│
+⋮
+│class RepoFilter:
+│    def __init__(self, root_path: Path):
+│        """
+│        Initialize filter with root path of cloned repository.
+│
+│        Args:
+│            root_path: Path to root of cloned repository
+│        """
+│        self.root_path = Path(root_path)
+│        self.allowed_extensions = self._load_extensions()
+⋮
+│    def _load_gitignore(self) -> Optional[pathspec.PathSpec]:
+⋮
+│    def _load_extensions(self) -> Set[str]:
+⋮
+│    def should_include(self, path: Path) -> bool:
+⋮
+│    def find_source_files(self, directories: Optional[List[str]] = None) -> List[str]:
+⋮
+│    def find_all_files(self) -> List[str]:
+⋮
+
+src\code_understanding\repository\manager.py:
+⋮
+│logger = logging.getLogger(__name__)
+│
+⋮
+│class Repository:
+│    def __init__(
+│        self,
+│        repo_id: str,
+│        root_path: Path,
+│        repo_type: str,
+│        is_git: bool,
+│        url: Optional[str] = None,
+│        branch: Optional[str] = None,
+│        manager: Optional["RepositoryManager"] = None,
+⋮
+│    def is_ignored(self, path: Union[str, Path]) -> bool:
+⋮
+│    async def get_resource(self, resource_path: str) -> Dict[str, Any]:
+⋮
+│    async def refresh(self) -> Dict[str, Any]:
+⋮
+│class RepositoryManager:
+│    def __init__(self, config: RepositoryConfig):
+│        self.config = config
+│        # Expand ~ in cache_dir path
+│        self.cache_dir = Path(os.path.expanduser(config.cache_dir))
+│        self.cache_dir.mkdir(parents=True, exist_ok=True)
+│        self.repositories: Dict[str, Repository] = {}
+⋮
+│    def _cleanup_if_needed(self):
+⋮
+│    async def get_repository(self, path: str) -> Repository:
+⋮
+│    async def _do_clone(
+│        self,
+│        url: str,
+│        str_path: str,
+│        branch: Optional[str] = None,
+│        is_local: bool = False,
+│    ):
+│        """Internal method to perform the actual clone or copy"""
+⋮
+│        try:
+│            # Update status to cloning/copying
+│            status_msg = "copying" if is_local else "cloning"
+⋮
+│            if is_local:
+│                # For local directories, use copytree with ignore function to exclude .git
+│                def ignore_git(dir, files):
+⋮
+│    async def _cleanup_repos_for_clone(self):
+⋮
+│    async def clone_repository(
+│        self, url: str, branch: Optional[str] = None
+⋮
+│    async def refresh_repository(self, path: str) -> Dict[str, Any]:
+⋮
+│    async def _do_refresh(self, original_path: str, cache_path: str):
+│        """Internal method to perform the actual refresh"""
+│        try:
+│            # Update status to refreshing
+│            await self.cache.update_clone_status(
+│                cache_path,  # Fixed: use string path directly, no str() needed
+│                {"status": "refreshing", "started_at": datetime.now().isoformat()},
+⋮
+│            if is_git:
+⋮
+│            else:
+│                # For local dirs:
+│                original_path = Path(original_path).resolve()
+⋮
+│                def ignore_git(dir, files):
+⋮
+│    async def cleanup(self):
+⋮
+
+src\code_understanding\repository\path_utils.py:
+⋮
+│def is_git_url(path: str) -> bool:
+⋮
+│def parse_github_url(url: str) -> Tuple[str, str, Optional[str]]:
+⋮
+│def get_cache_path(cache_dir: Path, repo_path: str) -> Path:
+⋮
+
+tests\code_understanding\context\test_extractor.py:
+⋮
+│@pytest.mark.asyncio
+│async def test_extract_files_with_indentation_format():
+⋮
+│@pytest.mark.asyncio
+│async def test_extract_files_empty_input():
+⋮
+│@pytest.mark.asyncio
+│async def test_extract_files_no_valid_paths():
+⋮
+│@pytest.mark.asyncio
+│async def test_extract_files_mixed_format():
+⋮
+
+tests\code_understanding\context\test_print.py:
+⋮
+│@pytest.mark.asyncio
+│async def test_print_extracted_files():
+⋮
+
+tests\test_repository_manager.py:
+⋮
+│@pytest.fixture
+│def repo_with_gitignore(tmp_path):
+⋮
+│def test_gitignore_filtering(repo_with_gitignore):
+⋮
+│def test_gitignore_dynamic_update(repo_with_gitignore):
+⋮
+│def test_no_gitignore_file(tmp_path):
+⋮
