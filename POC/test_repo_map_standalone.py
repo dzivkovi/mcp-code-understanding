@@ -130,7 +130,7 @@ def main():
 
     # Save the output to a file so we can examine it
     output_file = "repo_map_output.txt"
-    with open(output_file, "w") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(result)
 
     print(f"\nRepo map has been generated and saved to {output_file}")
