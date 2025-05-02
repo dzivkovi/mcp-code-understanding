@@ -11,7 +11,7 @@ import shutil
 import os
 import json
 import logging
-import fcntl
+import sys
 from contextlib import contextmanager
 from filelock import FileLock
 
@@ -54,20 +54,9 @@ class RepositoryCache:
 
     @contextmanager
     def _file_lock(self):
-        """File-based lock to handle concurrent operations"""
-        with open(self.lock_file, "r") as lock:
-            try:
-                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)  # Make it non-blocking
-                yield
-            except BlockingIOError:
-                # If we can't get the lock, read the metadata without locking
-                # This is safe because we're only reading
-                yield
-            finally:
-                try:
-                    fcntl.flock(lock, fcntl.LOCK_UN)
-                except BlockingIOError:
-                    pass  # We didn't get the lock, so nothing to unlock
+        """Platform-independent file-based lock to handle concurrent operations"""
+        with FileLock(str(self.lock_file) + ".lock", timeout=60):
+            yield
 
     def _get_actual_repos(self) -> Set[str]:
         """Get set of actual repository paths on disk"""
